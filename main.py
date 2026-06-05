@@ -236,4 +236,3 @@ def create_alert(data: AlertRequest):
         "message": "Demo alert created.",
         "alert": data.model_dump()
     }
-```
