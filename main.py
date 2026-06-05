@@ -7,7 +7,7 @@ from typing import Optional, List
 app = FastAPI(title="easyJet Deal Scout API", version="2.0.0")
 
 RAPIDAPI_KEY = os.getenv("RAPIDAPI_KEY")
-RAPIDAPI_HOST = "skyscanner-flight4.p.rapidapi.com"
+RAPIDAPI_HOST = "skyscanner-flights4.p.rapidapi.com"
 
 class FlightSearchRequest(BaseModel):
     origin: str = Field(..., example="ZRH")
