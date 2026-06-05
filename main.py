@@ -128,17 +128,20 @@ def search_flights(data: FlightSearchRequest):
         "x-rapidapi-key": RAPIDAPI_KEY,
         "Content-Type": "application/json"
     }
-
-    params = {
-        "origin": data.origin.upper(),
-        "destination": data.destination.upper(),
-        "adults": data.passengers,
-        "cabin": "economy",
-        "currency": "CHF",
-        "locale": "de-CH",
-        "market": "CH",
-        "limit": 20
-    }
+    
+params = {
+    "origin": data.origin.upper(),
+    "destination": data.destination.upper(),
+    "date": data.date_from,
+    "return_date": data.date_to,
+    "adults": data.passengers,
+    "cabin": "economy",
+    "currency": "CHF",
+    "locale": "de-CH",
+    "market": "CH",
+    "limit": 20
+}
+    
 
     response = requests.get(
         url,
