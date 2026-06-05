@@ -18,7 +18,7 @@ class FlightSearchRequest(BaseModel):
     destination: str = Field(..., example="PMI")
     date_from: str = Field(..., example="2026-10-01")
     date_to: str = Field(..., example="2026-10-08")
-    passengers: int = Field(1)
+    passengers: int = Field(default=1)
     max_price: Optional[float] = None
     baggage: Optional[bool] = False
 
@@ -59,15 +59,15 @@ def root():
 
 
 def extract_price(item):
-
-    for key in [
+    keys = [
         "price_raw",
         "price",
         "rawPrice",
         "minPrice",
         "amount"
-    ]:
+    ]
 
+    for key in keys:
         value = item.get(key)
 
         if isinstance(value, (int, float)):
@@ -85,25 +85,19 @@ def extract_price(item):
                     .strip()
                 )
                 return float(cleaned)
-            except:
+            except Exception:
                 pass
 
     return None
 
 
 def extract_airline(item):
-
     carriers = item.get("carriers")
 
     if isinstance(carriers, list) and len(carriers) > 0:
         return str(carriers[0])
 
-    for key in [
-        "airline",
-        "carrier",
-        "airlineName",
-        "name"
-    ]:
+    for key in ["airline", "carrier", "airlineName", "name"]:
         value = item.get(key)
 
         if isinstance(value, str):
@@ -118,7 +112,7 @@ def search_flights(data: FlightSearchRequest):
     if not RAPIDAPI_KEY:
         raise HTTPException(
             status_code=500,
-            detail="RAPIDAPI_KEY missing in Render."
+            detail="RAPIDAPI_KEY missing in Render environment."
         )
 
     url = f"https://{RAPIDAPI_HOST}/api/v1/roundtrip"
@@ -143,7 +137,7 @@ def search_flights(data: FlightSearchRequest):
     }
 
     response = requests.get(
-        url,
+        url=url,
         headers=headers,
         params=params,
         timeout=30
@@ -183,30 +177,29 @@ def search_flights(data: FlightSearchRequest):
         score = 80
 
         if data.max_price:
-
             if price <= data.max_price:
                 score = 95
-
             elif price <= data.max_price * 1.2:
                 score = 75
-
             else:
                 score = 45
 
-        results.append({
-            "airline": airline,
-            "origin": data.origin.upper(),
-            "destination": data.destination.upper(),
-            "departure_date": data.date_from,
-            "return_date": data.date_to,
-            "price": price,
-            "currency": "CHF",
-            "booking_url": "https://www.skyscanner.ch/",
-            "deal_score": score,
-            "notes": "Live result via RapidAPI Skyscanner."
-        })
+        results.append(
+            {
+                "airline": airline,
+                "origin": data.origin.upper(),
+                "destination": data.destination.upper(),
+                "departure_date": data.date_from,
+                "return_date": data.date_to,
+                "price": price,
+                "currency": "CHF",
+                "booking_url": "https://www.skyscanner.ch/",
+                "deal_score": score,
+                "notes": "Live result via RapidAPI Skyscanner."
+            }
+        )
 
-    if not results:
+    if len(results) == 0:
         return {
             "results": [
                 {
@@ -224,14 +217,11 @@ def search_flights(data: FlightSearchRequest):
             ]
         }
 
-    return {
-        "results": results
-    }
+    return {"results": results}
 
 
 @app.post("/create-alert")
 def create_alert(data: AlertRequest):
-
     return {
         "status": "created",
         "message": "Demo alert created.",
