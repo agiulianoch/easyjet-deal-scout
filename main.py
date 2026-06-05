@@ -141,14 +141,13 @@ params = {
     "market": "CH",
     "limit": 20
 }
-    
 
-    response = requests.get(
-        url,
-        headers=headers,
-        params=params,
-        timeout=30
-    )
+response = requests.get(
+    url,
+    headers=headers,
+    params=params,
+    timeout=30
+)
 
     if response.status_code != 200:
         raise HTTPException(
