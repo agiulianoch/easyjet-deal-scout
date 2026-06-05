@@ -128,26 +128,26 @@ def search_flights(data: FlightSearchRequest):
         "x-rapidapi-key": RAPIDAPI_KEY,
         "Content-Type": "application/json"
     }
-    
-params = {
-    "origin": data.origin.upper(),
-    "destination": data.destination.upper(),
-    "date": data.date_from,
-    "return_date": data.date_to,
-    "adults": data.passengers,
-    "cabin": "economy",
-    "currency": "CHF",
-    "locale": "de-CH",
-    "market": "CH",
-    "limit": 20
-}
 
-response = requests.get(
-    url,
-    headers=headers,
-    params=params,
-    timeout=30
-)
+    params = {
+        "origin": data.origin.upper(),
+        "destination": data.destination.upper(),
+        "date": data.date_from,
+        "return_date": data.date_to,
+        "adults": data.passengers,
+        "cabin": "economy",
+        "currency": "CHF",
+        "locale": "de-CH",
+        "market": "CH",
+        "limit": 20
+    }
+
+    response = requests.get(
+        url,
+        headers=headers,
+        params=params,
+        timeout=30
+    )
 
     if response.status_code != 200:
         raise HTTPException(
@@ -207,7 +207,6 @@ response = requests.get(
         })
 
     if not results:
-
         return {
             "results": [
                 {
